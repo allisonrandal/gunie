@@ -17,10 +17,10 @@ For more details, see the full text of the license in the file 'LICENSE'.
 
 =head1 PREREQUISITES
 
-You'll need golang installed, together with the pigeon PEG parser
-generator package. On both Debian/Ubuntu and Fedora/RHEL, golang can
-be installed with the package 'golang'. Then pigeon can be installed
-with:
+You'll need Go installed, together with the Peg parser generator
+package by Andrew Snodgrass. On both Debian/Ubuntu and Fedora/RHEL, Go
+can be installed with the package 'golang'. Then the Peg package can
+be installed with:
 
   $ go get -u github.com/pointlander/peg
 
