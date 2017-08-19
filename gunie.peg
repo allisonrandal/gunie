@@ -28,23 +28,24 @@ CompBlock <- Block (CONTINUE Block / Else)?
 
 Sideff <- Expr
 
-Expr <- Print / CExpr
+Expr <- PrintExpr / CExpr
 
-Print <- PRINT WS (WORD / CExpr)
+PrintExpr <- PRINT WS (WORD / CExpr)
 
 CExpr <- SExpr (',' SExpr)*
 
 SExpr <- ( AssignExpr / CondExpr ) WS
 
-AssignExpr <- UnaryExpr ASSIGN WS SExpr
+AssignExpr <- Term ASSIGN WS SExpr
 
 
-UnaryExpr <- PostfixExpr
-           / ( INC / DEC / NOT / NEGATE ) UnaryExpr
+Term <- PostfixExpr
+      / ( INC / DEC / NOT / NEGATE ) Term
+      / KeywordExpr
 
 PostfixExpr <-  PrimExpr ( INC / DEC )? WS
 
-PrimExpr <- ( REG / ARY / StringLiteral / '(' Expr ')' )
+PrimExpr <- ARYLEN / ARYELEM / HASHELEM / REG / ARY / READ / StringExpr / Constant / '(' Expr ')'
 
 CondExpr <- RangeExpr (TERNIF WS RangeExpr TERNELSE WS RangeExpr)*
 
@@ -60,24 +61,41 @@ ShiftExpr <- AdditiveExpr ((LEFTSHIFT/RIGHTSHIFT) WS AdditiveExpr)*
 
 AdditiveExpr <- MultiplicativeExpr ((ADD/SUBTRACT) WS MultiplicativeExpr)*
 
-MultiplicativeExpr <- UnaryExpr ((MULTIPLY/DIVIDE/MODULO) WS UnaryExpr)*
+MultiplicativeExpr <- Term ((MULTIPLY/DIVIDE/MODULO) WS Term)*
 
-Term <- ( REG / ARY / StringLiteral / '(' Expr ')' ) WS
+StringExpr <- StringLiteral / CharLiteral / BacktickLiteral
 
-StringLiteral <- [\"\'] StringChar* [\"\'] WS
+StringLiteral <- [\"] StringChar* [\"] WS
 
-StringChar <- Escape / ![\"\'\\] .
+StringChar <- StringEscape / ![\"\\] .
+StringEscape <- '\\' [\"\\nrt]
 
-Escape <- '\\' ['\"\\nrt]
+CharLiteral <- [\'] [^\']* [\'] WS
 
+BacktickLiteral <- [`] [^`]* [`] WS
+
+Constant <- FloatConstant / IntegerConstant
+
+IntegerConstant <- [0-9] / [1-9][0-9]*
+
+FloatConstant <- [0-9]* '.' [0-9]+
+
+KeywordExpr <- ( DO ( Block / WORD '(' Expr? ')' )
+               / OPEN ( WORD / '(' WS WORD WS (',' WS Expr)? ')' )
+               / DIE WS SExpr
+               ) WS
 
 Comment <- '#' (!'\n' .)*
 
-WORD <- ([a-z] / [A-Z] / [_])+
+WORD <- ([[a-z]] / [_])+
 WS <- [ \n\r\t]*
 
 REG <- '$' WORD
 ARY <- '@' WORD
+ARYLEN <- '$' '#' WORD
+ARYELEM <- REG '[' Constant ']'
+HASHELEM <- REG '{' Constant '}'
+READ <- '<' WORD '>'
 
 
 ASSIGN <- '='
@@ -136,6 +154,7 @@ CRYPT <- 'crypt'
 CHOP <- 'chop'
 CHMOD <- 'chmod'
 CHOWN <- 'chown'
+DIE <- 'die'
 EXIT <- 'exit'
 FEOF <- 'eof'
 EXP <- 'exp'
