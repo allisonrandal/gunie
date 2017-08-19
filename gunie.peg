@@ -34,9 +34,31 @@ Print <- PRINT WS (WORD / CExpr)
 
 CExpr <- SExpr (',' SExpr)*
 
-SExpr <- Term (Oper Term)* WS
+SExpr <- ( AssignExpr / CondExpr ) WS
 
-Oper <- ( EQ / NE / SEQ / SNE / ANDAND / OROR / ASSIGN ) WS
+AssignExpr <- UnaryExpr ASSIGN WS SExpr
+
+
+UnaryExpr <- PostfixExpr
+           / ( INC / DEC / NOT / NEGATE ) UnaryExpr
+
+PostfixExpr <-  PrimExpr ( INC / DEC )? WS
+
+PrimExpr <- ( REG / ARY / StringLiteral / '(' Expr ')' )
+
+CondExpr <- LogicExpr (TERNIF WS LogicExpr TERNELSE WS LogicExpr)*
+
+LogicExpr <- EqualityExpr ((ANDAND/OROR/XOR/BITAND/BITOR) WS EqualityExpr)*
+
+EqualityExpr <- RelationalExpr ((EQ/NE/SEQ/SNE) WS RelationalExpr)*
+
+RelationalExpr <- ShiftExpr ((LE/GE/LT/GT/SLE/SGE/SLT/SGT) WS ShiftExpr)*
+
+ShiftExpr <- AdditiveExpr ((LEFTSHIFT/RIGHTSHIFT) WS AdditiveExpr)*
+
+AdditiveExpr <- MultiplicativeExpr ((ADD/SUBTRACT) WS MultiplicativeExpr)*
+
+MultiplicativeExpr <- UnaryExpr ((MULTIPLY/DIVIDE/MODULO) WS UnaryExpr)*
 
 Term <- ( REG / ARY / StringLiteral / '(' Expr ')' ) WS
 
@@ -66,8 +88,8 @@ SUBTRACT <- '-'
 NEGATE <- '-'
 INC <- '++'
 DEC <- '--'
-LEFT_SHIFT <- '<<'
-RIGHT_SHIFT <- '>>'
+LEFTSHIFT <- '<<'
+RIGHTSHIFT <- '>>'
 MATCH <- '=~'
 NMATCH <- '!~'
 LT <- '<'
@@ -91,6 +113,8 @@ XOR <- '^'
 CONCAT <- '.'
 DOTDOT <- '..'
 COMPLEMENT <- '~'
+TERNIF <- '?'
+TERNELSE <- ':'
 
 IF <- 'if'
 ELSIF <- 'elsif'
