@@ -37,6 +37,7 @@ func main() {
 	gparser.Init()
 	err := gparser.Parse()
 	if err != nil {
+	        gparser.PrintSyntaxTree()
 		log.Fatal(err)
 	}
 	gparser.PrintSyntaxTree()
