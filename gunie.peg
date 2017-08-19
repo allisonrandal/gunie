@@ -46,7 +46,9 @@ PostfixExpr <-  PrimExpr ( INC / DEC )? WS
 
 PrimExpr <- ( REG / ARY / StringLiteral / '(' Expr ')' )
 
-CondExpr <- LogicExpr (TERNIF WS LogicExpr TERNELSE WS LogicExpr)*
+CondExpr <- RangeExpr (TERNIF WS RangeExpr TERNELSE WS RangeExpr)*
+
+RangeExpr <- LogicExpr (DOTDOT WS LogicExpr)*
 
 LogicExpr <- EqualityExpr ((ANDAND/OROR/XOR/BITAND/BITOR) WS EqualityExpr)*
 
