@@ -1,0 +1,43 @@
+# Gunie parses Perl 1.0 source code
+
+package main
+
+type Gunie Peg {
+
+}
+
+Prog <- Line+ EndOfFile
+
+Line <- (Comment Spacing) / (Sideff ';' Spacing)
+
+#Label <- (WORD ':')*
+
+Sideff <- Expr
+
+Expr <- Print / CExpr
+
+Print <- PRINT (WORD / CExpr)
+
+CExpr <- SExpr (',' SExpr)*
+
+SExpr <- Term (Oper Term)* Spacing
+
+Oper <- ('==' / '!=' / 'eq' / 'ne' / '&&' / '||' / '=') Spacing
+
+Term <- ('$' WORD / StringLiteral / '(' Expr ')' ) Spacing
+
+StringLiteral <- [\"\'] StringChar* [\"\'] Spacing
+
+StringChar <- Escape / ![\"\'\\] .
+
+Escape <- '\\' ['\"\\nrt]
+
+Spacing <- [ \n\r\t]*
+
+Comment <- '#' (!'\n' .)*
+
+WORD <- ([a-z] / [A-Z] / [_])+
+
+PRINT <- 'print' Spacing
+
+EndOfFile <- !.
