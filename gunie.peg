@@ -6,38 +6,158 @@ type Gunie Peg {
 
 }
 
-Prog <- Line+ EndOfFile
+Prog <- Lineseq EndOfFile
 
-Line <- (Comment Spacing) / (Sideff ';' Spacing)
+Lineseq <- Line+
 
-#Label <- (WORD ':')*
+Line <- ( Comment
+        / Cond
+        / Sideff ';'
+        ) WS
+
+Block <- '{' WS Lineseq '}' WS
+
+Cond <- (IF/UNLESS) WS ( '(' Expr ')' / Block ) WS CompBlock
+
+Else <- ELSE WS Block
+      / ELSIF WS '(' Expr ')' CompBlock
+
+CompBlock <- Block (CONTINUE Block / Else)?
+
+#Label <- (WORD ':')?
 
 Sideff <- Expr
 
 Expr <- Print / CExpr
 
-Print <- PRINT (WORD / CExpr)
+Print <- PRINT WS (WORD / CExpr)
 
 CExpr <- SExpr (',' SExpr)*
 
-SExpr <- Term (Oper Term)* Spacing
+SExpr <- Term (Oper Term)* WS
 
-Oper <- ('==' / '!=' / 'eq' / 'ne' / '&&' / '||' / '=') Spacing
+Oper <- ( EQ / NE / SEQ / SNE / ANDAND / OROR / ASSIGN ) WS
 
-Term <- ('$' WORD / StringLiteral / '(' Expr ')' ) Spacing
+Term <- ( REG / ARY / StringLiteral / '(' Expr ')' ) WS
 
-StringLiteral <- [\"\'] StringChar* [\"\'] Spacing
+StringLiteral <- [\"\'] StringChar* [\"\'] WS
 
 StringChar <- Escape / ![\"\'\\] .
 
 Escape <- '\\' ['\"\\nrt]
 
-Spacing <- [ \n\r\t]*
 
 Comment <- '#' (!'\n' .)*
 
 WORD <- ([a-z] / [A-Z] / [_])+
+WS <- [ \n\r\t]*
 
-PRINT <- 'print' Spacing
+REG <- '$' WORD
+ARY <- '@' WORD
+
+
+ASSIGN <- '='
+MULTIPLY <- '*'
+DIVIDE <- '/'
+MODULO <- '%'
+REPEAT <- 'x'
+ADD <- '+'
+SUBTRACT <- '-'
+NEGATE <- '-'
+INC <- '++'
+DEC <- '--'
+LEFT_SHIFT <- '<<'
+RIGHT_SHIFT <- '>>'
+MATCH <- '=~'
+NMATCH <- '!~'
+LT <- '<'
+GT <- '>'
+LE <- '<='
+GE <- '>='
+EQ <- '=='
+NE <- '!='
+SLT <- 'lt' / 'LT'
+SGT <- 'gt' / 'GT'
+SLE <- 'le' / 'LE'
+SGE <- 'ge' / 'GE'
+SEQ <- 'eq' / 'EQ'
+SNE <- 'ne' / 'NE'
+ANDAND <- '&&'
+OROR <- '||'
+NOT <- '!'
+BITAND <- '&'
+BITOR <- '!'
+XOR <- '^'
+CONCAT <- '.'
+DOTDOT <- '..'
+COMPLEMENT <- '~'
+
+IF <- 'if'
+ELSIF <- 'elsif'
+ELSE <- 'else'
+UNLESS <- 'unless'
+FOR <- 'for'
+DO <- 'do'
+WHILE <- 'while'
+UNTIL <- 'until'
+CONTINUE <- 'continue'
+LAST <- 'last'
+NEXT <- 'next'
+
+CHDIR <- 'chdir'
+CLOSE <- 'close'
+CRYPT <- 'crypt'
+CHOP <- 'chop'
+CHMOD <- 'chmod'
+CHOWN <- 'chown'
+EXIT <- 'exit'
+FEOF <- 'eof'
+EXP <- 'exp'
+EACH <- 'each'
+EXEC <- 'exec'
+FORMAT <- 'format'
+FORK <- 'fork'
+GOTO <- 'goto'
+GMTIME <- 'gmtime'
+HEX <- 'hex'
+INDEX <- 'index'
+INT <- 'int'
+JOIN <- 'join'
+KEYS <- 'keys'
+KILL <- 'kill'
+LENGTH <- 'length'
+LOCALTIME <- 'localtime'
+LOG <- 'log'
+LENGTH <- 'length'
+OPEN <- 'open'
+ORD <- 'ord'
+OCT <- 'oct'
+PRINT <- 'print'
+PRTF <- 'printf'
+PUSH <- 'push'
+POP <- 'pop'
+RESET <- 'reset'
+REDO <- 'redo'
+RENAME <- 'rename'
+SHIFT <- 'shift'
+SPLIT <- 'split'
+SUBSTR <- 'substr'
+SPRINTF <- 'sprintf'
+SUB <- 'sub'
+SELECT <- 'select'
+SEEK <- 'seek'
+STAT <- 'stat'
+SQRT <- 'sqrt'
+SLEEP <- 'sleep'
+SYSTEM <- 'system'
+TELL <- 'tell'
+TIME <- 'time'
+TIMES <- 'times'
+USING <- 'using'
+UMASK <- 'umask'
+UNSHIFT <- 'unshift'
+UNLINK <- 'unlink'
+VALUES <- 'values'
+WRITE <- 'write'
 
 EndOfFile <- !.
