@@ -42,7 +42,7 @@ Term <- PostfixExpr
 
 PostfixExpr <-  PrimExpr ( INC / DEC )? WS
 
-PrimExpr <- ARYLEN / ARYELEM / HASHELEM / REG / ARY / READ / StringExpr / Constant / '(' Expr ')'
+PrimExpr <- ARYLEN / ARYELEM / HASHELEM / REG / ARY / READ / PatternExpr / StringExpr / Constant / '(' Expr ')'
 
 CondExpr <- RangeExpr (TERNIF WS RangeExpr TERNELSE WS RangeExpr)*
 
@@ -60,6 +60,7 @@ AdditiveExpr <- MultiplicativeExpr ((ADD/SUBTRACT) WS MultiplicativeExpr)*
 
 MultiplicativeExpr <- Term ((MULTIPLY/DIVIDE/MODULO) WS Term)*
 
+PatternExpr <- [/] [^/]* [/] WS
 StringExpr <- StringLiteral / CharLiteral / BacktickLiteral
 
 StringLiteral <- [\"] StringChar* [\"] WS
@@ -95,7 +96,7 @@ ARYLEN <- '$' '#' WORD
 ARYELEM <- REG '[' Constant ']'
 HASHELEM <- REG '{' Constant '}'
 READ <- '<' WORD '>'
-SPECIALREG <- '$' [ #]
+SPECIALREG <- '$' [ _#]
 
 
 ASSIGN <- '='
