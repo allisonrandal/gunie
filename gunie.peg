@@ -10,10 +10,7 @@ Prog <- Lineseq EndOfFile
 
 Lineseq <- Line+
 
-Line <- ( Comment
-        / Cond
-        / Sideff ';'
-        ) WS
+Line <- ( Comment / Cond / Sideff ';') WS
 
 Block <- '{' WS Lineseq '}' WS
 
@@ -83,19 +80,22 @@ FloatConstant <- [0-9]* '.' [0-9]+
 KeywordExpr <- ( DO ( Block / WORD '(' Expr? ')' )
                / OPEN ( WORD / '(' WS WORD WS (',' WS Expr)? ')' )
                / DIE WS SExpr
+               / LENGTH '(' Expr ')'
                ) WS
+
+
+WORD <- ([[a-z]] / [_])+
+WS <- Comment? [ \n\r\t]*
 
 Comment <- '#' (!'\n' .)*
 
-WORD <- ([[a-z]] / [_])+
-WS <- [ \n\r\t]*
-
-REG <- '$' WORD
+REG <- SPECIALREG / '$' WORD
 ARY <- '@' WORD
 ARYLEN <- '$' '#' WORD
 ARYELEM <- REG '[' Constant ']'
 HASHELEM <- REG '{' Constant '}'
 READ <- '<' WORD '>'
+SPECIALREG <- '$' [ #]
 
 
 ASSIGN <- '='
