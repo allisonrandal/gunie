@@ -24,6 +24,9 @@ be installed with:
 
   $ go get -u github.com/pointlander/peg
 
+(Make sure you have the $GOPATH environment variable set to something
+sensible, probably '~/go'.)
+
 =head1 COPYRIGHT
 
 Copyright (C) 2017, Allison Randal
