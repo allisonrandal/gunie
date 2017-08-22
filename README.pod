@@ -31,4 +31,11 @@ sensible, probably '~/go'.)
 
 Copyright (C) 2017, Allison Randal
 
+The test files in t/ are:
+
+Copyright (C) 1987, Larry Wall
+
+Relicensed under the Artistic License 2.0 by permission from the
+author.
+
 =cut
