@@ -10,7 +10,7 @@ Prog <- Lineseq EndOfFile
 
 Lineseq <- Line+
 
-Line <- ( Comment / Decl / Cond / Loop / Sideff ';') WS
+Line <- ( Comment / Decl / Cond / Loop / Block / Sideff ';') WS
 
 Decl <- Subrout
 
@@ -23,11 +23,14 @@ Cond <- (IF/UNLESS) WS ( '(' Expr ')' / Block ) WS CompBlock
 Else <- ELSE WS Block
       / ELSIF WS '(' Expr ')' WS CompBlock
 
-CompBlock <- Block (CONTINUE Block / Else)?
+CompBlock <- Block WS (CONTINUE WS Block / Else)?
 
-Loop <- FOR WS '(' WS Sideff? WS ';' WS Expr? WS ';' WS Sideff? WS ')' WS Block
+Loop <- Label? (
+            WHILE WS ( '(' Expr? ')' / Block ) WS CompBlock
+          / FOR WS '(' WS Sideff? WS ';' WS Expr? WS ';' WS Sideff? WS ')' WS Block
+        )
 
-#Label <- (WORD ':')?
+Label <- WORD ':' WS
 
 LoopMod <- ( WHILE / UNTIL ) WS Expr
 
@@ -37,7 +40,7 @@ Sideff <- Expr ( CondMod / LoopMod )?
 
 Expr <- PrintExpr / CExpr
 
-PrintExpr <- PRINT WS (WORD / CExpr)
+PrintExpr <- PRINT WS ( WORD WS Expr / WORD / Expr )
 
 CExpr <- SExpr (',' SExpr)*
 
@@ -70,7 +73,9 @@ AdditiveExpr <- MultiplicativeExpr ((ADD/SUBTRACT) WS MultiplicativeExpr)*
 
 MultiplicativeExpr <- Term ((MULTIPLY/DIVIDE/MODULO) WS Term)*
 
-PatternExpr <- [/] [^/]* [/] WS
+PatternExpr <- 's' [/] [^/]* [/]  [^/]* [/] 'g'? WS
+             / [/] [^/]* [/] WS
+
 StringExpr <- StringLiteral / CharLiteral / BacktickLiteral
 
 StringLiteral <- [\"] StringChar* [\"] WS
@@ -89,12 +94,15 @@ IntegerConstant <- [1-9][0-9]* / [0-9]
 FloatConstant <- [0-9]* '.' [0-9]+
 
 KeywordExpr <- ( DO WS ( Block / WORD '(' Expr? ')' )
-               / OPEN ( WORD / '(' WS WORD WS (',' WS Expr)? ')' )
+               / OPEN WS ( WORD / '(' WS WORD WS (',' WS Expr)? ')' )
+               / CLOSE WS ( WORD / '(' WS WORD WS ')' )
+               / FEOF WS ( '(' WS WORD? WS ')' )?
                / JOIN WS '(' WS ( WORD / SExpr ) WS ',' WS Expr WS ')'
                / DIE WS SExpr
                / LENGTH '(' Expr ')'
-               / LAST
-               / NEXT
+               / LAST ( WS !(IF/UNLESS/WHILE/UNTIL) WORD )?
+               / NEXT ( WS !(IF/UNLESS/WHILE/UNTIL) WORD )?
+               / REDO WS WORD?
                ) WS
 
 
