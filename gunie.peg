@@ -10,7 +10,7 @@ Prog <- Lineseq EndOfFile
 
 Lineseq <- Line+
 
-Line <- ( Comment / Decl / Cond / Sideff ';') WS
+Line <- ( Comment / Decl / Cond / Loop / Sideff ';') WS
 
 Decl <- Subrout
 
@@ -25,9 +25,13 @@ Else <- ELSE WS Block
 
 CompBlock <- Block (CONTINUE Block / Else)?
 
+Loop <- FOR WS '(' WS Sideff? WS ';' WS Expr? WS ';' WS Sideff? WS ')' WS Block
+
 #Label <- (WORD ':')?
 
-Sideff <- Expr
+CondMod <- ( IF / UNLESS ) WS Expr
+
+Sideff <- Expr CondMod?
 
 Expr <- PrintExpr / CExpr
 
@@ -78,14 +82,17 @@ BacktickLiteral <- [`] [^`]* [`] WS
 
 Constant <- FloatConstant / IntegerConstant
 
-IntegerConstant <- [0-9] / [1-9][0-9]*
+IntegerConstant <- [1-9][0-9]* / [0-9]
 
 FloatConstant <- [0-9]* '.' [0-9]+
 
 KeywordExpr <- ( DO WS ( Block / WORD '(' Expr? ')' )
                / OPEN ( WORD / '(' WS WORD WS (',' WS Expr)? ')' )
+               / JOIN WS '(' WS ( WORD / SExpr ) WS ',' WS Expr WS ')'
                / DIE WS SExpr
                / LENGTH '(' Expr ')'
+               / LAST
+               / NEXT
                ) WS
 
 
@@ -97,8 +104,8 @@ Comment <- '#' (!'\n' .)*
 REG <- SPECIALREG / '$' WORD
 ARY <- '@' WORD
 ARYLEN <- '$' '#' WORD
-ARYELEM <- REG '[' Constant ']'
-HASHELEM <- REG '{' Constant '}'
+ARYELEM <- REG '[' Expr ']'
+HASHELEM <- REG '{' Expr '}'
 READ <- '<' WORD '>'
 SPECIALREG <- '$' [ _#]
 
