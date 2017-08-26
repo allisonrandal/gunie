@@ -98,7 +98,7 @@ KeywordExpr <- ( DO WS ( Block / WORD '(' Expr? ')' )
                ) WS
 
 
-WORD <- ([[a-z]] / [_])+
+WORD <- ([[a-z]] / [0-9] / [_])+
 WS <- Comment? [ \n\r\t]*
 
 Comment <- '#' (!'\n' .)*
