@@ -10,14 +10,18 @@ Prog <- Lineseq EndOfFile
 
 Lineseq <- Line+
 
-Line <- ( Comment / Cond / Sideff ';') WS
+Line <- ( Comment / Decl / Cond / Sideff ';') WS
+
+Decl <- Subrout
+
+Subrout <- SUB WS WORD WS Block
 
 Block <- '{' WS Lineseq '}' WS
 
 Cond <- (IF/UNLESS) WS ( '(' Expr ')' / Block ) WS CompBlock
 
 Else <- ELSE WS Block
-      / ELSIF WS '(' Expr ')' CompBlock
+      / ELSIF WS '(' Expr ')' WS CompBlock
 
 CompBlock <- Block (CONTINUE Block / Else)?
 
@@ -78,7 +82,7 @@ IntegerConstant <- [0-9] / [1-9][0-9]*
 
 FloatConstant <- [0-9]* '.' [0-9]+
 
-KeywordExpr <- ( DO ( Block / WORD '(' Expr? ')' )
+KeywordExpr <- ( DO WS ( Block / WORD '(' Expr? ')' )
                / OPEN ( WORD / '(' WS WORD WS (',' WS Expr)? ')' )
                / DIE WS SExpr
                / LENGTH '(' Expr ')'
