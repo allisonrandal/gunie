@@ -29,9 +29,11 @@ Loop <- FOR WS '(' WS Sideff? WS ';' WS Expr? WS ';' WS Sideff? WS ')' WS Block
 
 #Label <- (WORD ':')?
 
+LoopMod <- ( WHILE / UNTIL ) WS Expr
+
 CondMod <- ( IF / UNLESS ) WS Expr
 
-Sideff <- Expr CondMod?
+Sideff <- Expr ( CondMod / LoopMod )?
 
 Expr <- PrintExpr / CExpr
 
